@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Hand cursor on every clickable control, app-wide — buttons, links,
+   and anything explicitly marked as a button (e.g. dropdown items) —
+   so no individual component needs its own cursor-pointer class. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a,
+  select {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}

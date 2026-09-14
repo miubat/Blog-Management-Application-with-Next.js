@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────
+# Root .gitignore for the monorepo
+#
+# Applies to every workspace: backend/, frontend/, learn-nextjs/
+# ─────────────────────────────────────────────────────────────
+
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Secrets — NEVER commit these.
+# backend/.env holds DB_PASSWORD and JWT_SECRET.
+# Commit .env.example instead, with placeholder values.
+.env
+.env.*
+!.env.example
+
+# Uploaded files are user data, not source code.
+# The folder itself is kept so multer has somewhere to write.
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db

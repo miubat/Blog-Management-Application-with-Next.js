@@ -1,0 +1,20 @@
+[
+    {
+        "id": 101,
+        "fullName": "Hasib",
+        "email": "hasib@test.com",
+        "phonenumber": "0150447777"
+    },
+    {
+        "id": 102,
+        "fullName": "Jamil",
+        "email": "jamil@test.com",
+        "phonenumber": "0170447777"
+    },
+    {
+        "id": 103,
+        "fullName": "Nayan",
+        "email": "nayan@test.com",
+        "phonenumber": "0154778999"
+    }
+]
