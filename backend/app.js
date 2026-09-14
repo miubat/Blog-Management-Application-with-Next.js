@@ -17,6 +17,17 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+app.use((req, res, next) => {
+    const originalJson = res.json.bind(res);
+    res.json = (body) => {
+        if (body && typeof body === "object" && typeof body.success === "undefined") {
+            body = { success: res.statusCode < 400, ...body };
+        }
+        return originalJson(body);
+    };
+    next();
+});
+
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/blogs", blogRoute);

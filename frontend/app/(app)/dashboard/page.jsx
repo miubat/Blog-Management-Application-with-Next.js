@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { getBlogs } from "@/services/blog.service";
+import { getBlogs, getMyBlogs } from "@/services/blog.service";
 import { getErrorMessage } from "@/lib/api";
 import BlogCard from "@/components/BlogCard";
 import Loader from "@/components/Loader";
@@ -21,14 +21,23 @@ export default function DashboardPage() {
     setLoading(true);
     setError("");
 
-    getBlogs()
-      .then((res) => {
-        const mine = isAdmin ? res.data.data : res.data.data.filter((b) => b.userId === user.id);
-        setTotal(mine.length);
-        setBlogs(mine.slice(0, 3));
-      })
-      .catch((err) => setError(getErrorMessage(err)))
-      .finally(() => setLoading(false));
+    if (isAdmin) {
+      getBlogs({ page: 1, limit: 3 })
+        .then((res) => {
+          setTotal(res.data.data.total);
+          setBlogs(res.data.data.blogs);
+        })
+        .catch((err) => setError(getErrorMessage(err)))
+        .finally(() => setLoading(false));
+    } else {
+      getMyBlogs()
+        .then((res) => {
+          setTotal(res.data.data.length);
+          setBlogs(res.data.data.slice(0, 3));
+        })
+        .catch((err) => setError(getErrorMessage(err)))
+        .finally(() => setLoading(false));
+    }
   }, [isAdmin, user]);
 
   return (

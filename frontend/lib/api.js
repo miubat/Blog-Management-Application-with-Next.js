@@ -3,8 +3,6 @@ import axios from "axios";
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// Uploaded files (avatars) are served from the host root, not under /api —
-// this strips a trailing /api so <img src> URLs resolve correctly.
 export const API_ORIGIN = API_URL.replace(/\/api\/?$/, "");
 
 const api = axios.create({ baseURL: API_URL });

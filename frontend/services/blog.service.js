@@ -1,9 +1,8 @@
 import api from "@/lib/api";
 
-// Backend has no dedicated "my blogs" endpoint — GET /blogs returns every
-// blog (optionally filtered by title/category), so "My Blogs" is this same
-// list filtered client-side by author id (see dashboard/blogs/page.jsx).
 export const getBlogs = (params = {}) => api.get("/blogs", { params });
+
+export const getMyBlogs = () => api.get("/blogs/mine");
 
 export const getBlogById = (id) => api.get(`/blogs/${id}`);
 

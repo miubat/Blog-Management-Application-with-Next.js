@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllUsers, setUserStatus } from "@/services/user.service";
 import { getErrorMessage } from "@/lib/api";
-import { paginate } from "@/lib/paginate";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
 import Avatar from "@/components/Avatar";
@@ -12,8 +11,9 @@ import Avatar from "@/components/Avatar";
 const PAGE_SIZE = 10;
 
 export default function AdminUsersPage() {
-  const [allUsers, setAllUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,34 +23,25 @@ export default function AdminUsersPage() {
     setLoading(true);
     setError("");
 
-    // Backend has no server-side search, so it's applied on the full list here.
-    getAllUsers()
-      .then((res) => setAllUsers(res.data.data))
+    getAllUsers({ page, limit: PAGE_SIZE, search: search.trim() || undefined })
+      .then((res) => {
+        setUsers(res.data.data.users);
+        setTotalPages(res.data.data.totalPages);
+      })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
-  }, []);
+  }, [page, search]);
 
   useEffect(() => {
     load();
   }, [load]);
-
-  const term = search.trim().toLowerCase();
-  const filtered = term
-    ? allUsers.filter(
-        (u) =>
-          `${u.firstname} ${u.lastname}`.toLowerCase().includes(term) ||
-          u.email.toLowerCase().includes(term)
-      )
-    : allUsers;
-
-  const { items: users, totalPages, page: currentPage } = paginate(filtered, page, PAGE_SIZE);
 
   const toggleStatus = async (user) => {
     setUpdatingId(user.id);
     setError("");
     try {
       await setUserStatus(user.id, !user.isActive);
-      setAllUsers((prev) =>
+      setUsers((prev) =>
         prev.map((u) => (u.id === user.id ? { ...u, isActive: !u.isActive } : u))
       );
     } catch (err) {
@@ -132,7 +123,7 @@ export default function AdminUsersPage() {
       )}
 
       {!loading && users.length > 0 && (
-        <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
     </div>
   );

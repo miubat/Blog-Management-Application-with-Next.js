@@ -8,13 +8,34 @@ export const createBlog = async ({ userId, blogTitle, blog, category }) => {
     return Blog.create({ userId, blogTitle, blog, category });
 };
 
-export const findBlogs = async ({ title, category }) => {
+export const findBlogs = async ({ title, category, page = 1, limit = 10 }) => {
     const where = {};
     if (title) where.blogTitle = { [Op.like]: `%${title}%` };
     if (category) where.category = { [Op.like]: `%${category}%` };
 
-    return Blog.findAll({
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+
+    const { rows, count } = await Blog.findAndCountAll({
         where,
+        include: [{ model: User, as: "author", attributes: AUTHOR_ATTRIBUTES }],
+        order: [["createAt", "DESC"]],
+        limit: limitNum,
+        offset: (pageNum - 1) * limitNum,
+    });
+
+    return {
+        blogs: rows,
+        total: count,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(count / limitNum),
+    };
+};
+
+export const findBlogsByUser = async (userId) => {
+    return Blog.findAll({
+        where: { userId },
         include: [{ model: User, as: "author", attributes: AUTHOR_ATTRIBUTES }],
         order: [["createAt", "DESC"]],
     });

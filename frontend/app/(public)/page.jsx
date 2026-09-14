@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getBlogs } from "@/services/blog.service";
 import { getErrorMessage } from "@/lib/api";
-import { paginate } from "@/lib/paginate";
 import BlogCard from "@/components/BlogCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import SearchBar from "@/components/SearchBar";
@@ -20,7 +19,8 @@ function HomeContent() {
   const category = searchParams.get("category") || "";
   const page = Number(searchParams.get("page") || 1);
 
-  const [allBlogs, setAllBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -28,13 +28,14 @@ function HomeContent() {
     setLoading(true);
     setError("");
 
-    getBlogs({ title, category })
-      .then((res) => setAllBlogs(res.data.data))
+    getBlogs({ title, category, page, limit: PAGE_SIZE })
+      .then((res) => {
+        setBlogs(res.data.data.blogs);
+        setTotalPages(res.data.data.totalPages);
+      })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
-  }, [title, category]);
-
-  const { items: blogs, totalPages, page: currentPage } = paginate(allBlogs, page, PAGE_SIZE);
+  }, [title, category, page]);
 
   const updateParams = useCallback(
     (patch) => {
@@ -77,7 +78,7 @@ function HomeContent() {
             ))}
           </div>
           <Pagination
-            page={currentPage}
+            page={page}
             totalPages={totalPages}
             onPageChange={(next) => updateParams({ page: String(next) })}
           />

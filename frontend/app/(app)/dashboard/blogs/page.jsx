@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { getBlogs, deleteBlog } from "@/services/blog.service";
+import { getBlogs, getMyBlogs, deleteBlog } from "@/services/blog.service";
 import { getErrorMessage } from "@/lib/api";
-import { paginate, formatDate } from "@/lib/paginate";
+import { formatDate } from "@/lib/paginate";
 import Loader from "@/components/Loader";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Pagination from "@/components/Pagination";
@@ -13,11 +13,12 @@ import Pagination from "@/components/Pagination";
 const PAGE_SIZE = 10;
 
 export default function MyBlogsPage() {
-  const { user, role } = useAuth();
+  const { role } = useAuth();
   const isAdmin = role === "admin";
 
-  const [allBlogs, setAllBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [toDelete, setToDelete] = useState(null);
@@ -28,22 +29,25 @@ export default function MyBlogsPage() {
     setLoading(true);
     setError("");
 
-    getBlogs()
+    const request = isAdmin ? getBlogs({ page, limit: PAGE_SIZE }) : getMyBlogs();
+
+    request
       .then((res) => {
-        // Backend has no "my blogs" endpoint — admins see every blog,
-        // normal users only see blogs where they are the author.
-        const blogs = isAdmin ? res.data.data : res.data.data.filter((b) => b.userId === user.id);
-        setAllBlogs(blogs);
+        if (isAdmin) {
+          setBlogs(res.data.data.blogs);
+          setTotalPages(res.data.data.totalPages);
+        } else {
+          setBlogs(res.data.data);
+          setTotalPages(1);
+        }
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
-  }, [isAdmin, user]);
+  }, [isAdmin, page]);
 
   useEffect(() => {
     load();
   }, [load]);
-
-  const { items: blogs, totalPages, page: currentPage } = paginate(allBlogs, page, PAGE_SIZE);
 
   const confirmDelete = async () => {
     if (!toDelete) return;
@@ -126,8 +130,8 @@ export default function MyBlogsPage() {
         </div>
       )}
 
-      {!loading && blogs.length > 0 && (
-        <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
+      {!loading && isAdmin && blogs.length > 0 && (
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
 
       <ConfirmDialog

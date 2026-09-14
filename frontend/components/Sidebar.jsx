@@ -21,9 +21,6 @@ const ADMIN_LINKS = [
   { href: "/dashboard/change-password", label: "Change Password" },
 ];
 
-// Picks the single most specific link for the current path — e.g. on
-// /dashboard/blogs/create, "Create Blog" (longer href) wins over
-// "My Blogs" even though both hrefs are prefixes of the path.
 function findActiveHref(links, pathname) {
   let best = null;
   for (const link of links) {

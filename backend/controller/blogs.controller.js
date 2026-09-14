@@ -17,9 +17,18 @@ export const createBlog = async (req, res) => {
 
 export const getAllBlogs = async (req, res) => {
     try {
-        const { title, category } = req.query;
-        const blogs = await blogService.findBlogs({ title, category });
-        res.status(200).json({ message: "Blogs retrieved successfully", data: blogs });
+        const { title, category, page, limit } = req.query;
+        const result = await blogService.findBlogs({ title, category, page, limit });
+        res.status(200).json({ message: "Blogs retrieved successfully", data: result });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const getMyBlogs = async (req, res) => {
+    try {
+        const blogs = await blogService.findBlogsByUser(req.user.id);
+        res.status(200).json({ message: "Your blogs retrieved successfully", data: blogs });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
     }

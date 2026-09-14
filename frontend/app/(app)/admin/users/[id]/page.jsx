@@ -31,8 +31,6 @@ export default function AdminUserDetailsPage() {
     setUpdating(true);
     setError("");
     try {
-      // Backend only returns { id, isActive } here, not the full user —
-      // merge it in rather than replacing the whole object.
       const res = await setUserStatus(id, !user.isActive);
       setUser((prev) => ({ ...prev, ...res.data.data }));
     } catch (err) {

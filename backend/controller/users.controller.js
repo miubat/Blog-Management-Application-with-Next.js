@@ -1,10 +1,40 @@
 import bcrypt from "bcrypt";
+import { Op } from "sequelize";
 import User from "../models/user.model.js";
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.findAll({ attributes: { exclude: ["password"] } });
-        res.status(200).json({ message: "Users retrieved successfully", data: users });
+        const { search } = req.query;
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+
+        const where = {};
+        if (search) {
+            where[Op.or] = [
+                { firstname: { [Op.like]: `%${search}%` } },
+                { lastname: { [Op.like]: `%${search}%` } },
+                { email: { [Op.like]: `%${search}%` } },
+            ];
+        }
+
+        const { rows, count } = await User.findAndCountAll({
+            where,
+            attributes: { exclude: ["password"] },
+            limit,
+            offset: (page - 1) * limit,
+            order: [["id", "ASC"]],
+        });
+
+        res.status(200).json({
+            message: "Users retrieved successfully",
+            data: {
+                users: rows,
+                total: count,
+                page,
+                limit,
+                totalPages: Math.ceil(count / limit),
+            },
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
     }
