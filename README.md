@@ -64,12 +64,12 @@ Edit `backend/.env` and set your MySQL password:
 
 ```ini
 PORT=5000
-DB_NAME=blogdb
-DB_USER=root
-DB_PASSWORD=1234
 DB_HOST=localhost
 DB_PORT=3306
-SECRET_KEY=mysecretkey
+DB_USER=root
+DB_PASSWORD=your_db_password
+DB_NAME=blogdb
+SECRET_KEY=change-this-to-a-long-random-secret
 GMAIL=your_gmail_address@gmail.com
 GMAIL_APP_PASSWORD=your_gmail_app_password
 FRONTEND_URL=http://localhost:3000
@@ -109,7 +109,7 @@ NEXT_PUBLIC_API_URL=http://localhost:5000/api
 |---|---|---|
 | `PORT` | backend | Port the API listens on |
 | `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | backend | MySQL connection |
-| `JWT_SECRET`, `JWT_EXPIRES_IN` | backend | Token signing |
+| `SECRET_KEY` | backend | Token signing (JWT expiry is fixed at `1d`) |
 | `GMAIL`, `GMAIL_APP_PASSWORD` | backend | Sends welcome / password-reset emails |
 | `FRONTEND_URL` | backend | Base URL used to build the password-reset link |
 | `NEXT_PUBLIC_API_URL` | frontend | Base URL the frontend calls for the API |
@@ -163,7 +163,29 @@ See "Main Features" above — the short version: a **user** owns their blogs and
 
 ## 10. Screenshots
 
-_Add screenshots of the home page, blog details, dashboard, create/edit blog, profile, and admin users pages here before submitting._
+**Home**
+![Home page](docs-screenshots/Home-page.png)
+
+**Login**
+![Login](docs-screenshots/login.png)
+
+**Register**
+![Register](docs-screenshots/register.png)
+
+**Blog Details**
+![Blog details](docs-screenshots/blog-details.png)
+
+**Dashboard**
+![Dashboard](docs-screenshots/dashboard.png)
+
+**Create Blog**
+![Create blog](docs-screenshots/create-blog.png)
+
+**Profile**
+![Profile](docs-screenshots/profile.png)
+
+**Admin Users**
+![Admin users](docs-screenshots/admin-users.png)
 
 ---
 
