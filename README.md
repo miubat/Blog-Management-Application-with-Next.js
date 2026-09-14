@@ -64,13 +64,12 @@ Edit `backend/.env` and set your MySQL password:
 
 ```ini
 PORT=5000
+DB_NAME=blogdb
+DB_USER=root
+DB_PASSWORD=1234
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_db_password
-DB_NAME=miniapp1
-JWT_SECRET=supersecretkey123
-JWT_EXPIRES_IN=24h
+SECRET_KEY=mysecretkey
 GMAIL=your_gmail_address@gmail.com
 GMAIL_APP_PASSWORD=your_gmail_app_password
 FRONTEND_URL=http://localhost:3000
@@ -99,7 +98,7 @@ npm run dev      # → http://localhost:3000
 `.env.local` (git-ignored):
 
 ```ini
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
 ---
